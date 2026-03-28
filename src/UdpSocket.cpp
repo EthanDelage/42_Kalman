@@ -5,12 +5,15 @@
 #include <stdexcept>
 #include <array>
 
+#define KALMAN_UDP_PORT 4242
+#define KALMAN_UDP_ADDR INADDR_ANY
+
 UdpSocket::UdpSocket() {
   struct sockaddr_in addr;
 
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(4242);
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  addr.sin_port = htons(KALMAN_UDP_PORT);
+  addr.sin_addr.s_addr = htonl(KALMAN_UDP_ADDR);
   _socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (_socket_fd == -1) {
     throw std::runtime_error ("UdpSocket: socket");
