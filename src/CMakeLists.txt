@@ -1,5 +1,8 @@
 add_executable(kalman
         main.cpp
+        UdpSocket.cpp
+        parser/EventParser.cpp
+        parser/MessageParser.cpp
 )
 
 include(FetchContent)
