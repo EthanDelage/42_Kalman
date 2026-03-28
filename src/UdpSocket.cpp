@@ -1,1 +1,41 @@
 #include "UdpSocket.hpp"
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdexcept>
+#include <array>
+
+UdpSocket::UdpSocket() {
+  struct sockaddr_in addr;
+
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(4242);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  _socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (_socket_fd == -1) {
+    throw std::runtime_error ("UdpSocket: socket");
+  }
+  if (connect(_socket_fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) == -1) {
+    throw std::runtime_error ("UdpSocket: connect");
+  }
+}
+
+std::string UdpSocket::recv() const {
+  std::array<char, BUFFER_SIZE> buffer{};
+
+  ssize_t len = ::recv(_socket_fd, buffer.data(), buffer.size(), 0);
+  if (len == -1) {
+    throw std::runtime_error ("UdpSocket::recv : recv");
+  }
+  return {buffer.data(), static_cast<std::string::size_type>(len)};
+}
+
+void UdpSocket::send(const std::string &str) const {
+  ssize_t len = ::send(_socket_fd, str.data(), str.size(), 0);
+  if (len == -1) {
+    throw std::runtime_error ("UdpSocket::send : send");
+  }
+  if (static_cast<std::string::size_type>(len) != str.size()) {
+    throw std::runtime_error ("UdpSocket::send : message partially sent");
+  }
+}
