@@ -2,8 +2,6 @@
 #define KALMAN_UDPSOCKET_HPP
 #include <string>
 
-#define BUFFER_SIZE 2048
-
 class UdpSocket {
 public:
   UdpSocket();
