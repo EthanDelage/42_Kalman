@@ -2,14 +2,15 @@
 
 MessageParser::MessageParser() : _message_started(false) {}
 
-MessageParser::MessageType MessageParser::parse(std::istream &str) {
+MessageParser::MessageType MessageParser::parse(std::string &str) {
+  std::istringstream ss(str);
   std::string first_word;
-  const std::streampos pos = str.tellg();
+  const std::streampos pos = ss.tellg();
 
-  str >> first_word;
+  ss >> first_word;
 
-  str.clear();
-  str.seekg(pos);
+  ss.clear();
+  ss.seekg(pos);
 
   if (first_word == MSG_START_STR) {
     _message_started = true;
@@ -20,14 +21,12 @@ MessageParser::MessageType MessageParser::parse(std::istream &str) {
     return MessageType::End;
   }
   if (_message_started) {
-    _events.push_back(EventParser::parse(str));
+    _events.push_back(EventParser::parse(ss));
     return MessageType::Event;
   }
   return MessageType::Undefined;
 }
 
-std::vector<EventParser::event_t> MessageParser::get_events() const {
-  return _events;
-}
+std::vector<event_t> MessageParser::get_events() const { return _events; }
 
 void MessageParser::clear_events() { _events.clear(); }

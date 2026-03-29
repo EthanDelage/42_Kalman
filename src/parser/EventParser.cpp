@@ -1,7 +1,7 @@
 #include "parser/EventParser.hpp"
 
+#include <chrono>
 #include <Eigen/Dense>
-#include "chrono"
 
 static void router(std::istringstream &ss, event_t &event);
 static void parse_acceleration(std::istringstream &ss, event_t &event);
@@ -14,7 +14,7 @@ static std::chrono::milliseconds parse_timestamp(std::istringstream &str);
 static int expect_char(std::istringstream &ss, char expected);
 
 event_t EventParser::parse(std::istringstream &ss) {
-  event_t event {};
+  event_t event{};
 
   event.timestamp = parse_timestamp(ss);
 
@@ -23,19 +23,17 @@ event_t EventParser::parse(std::istringstream &ss) {
 }
 
 static void router(std::istringstream &ss, event_t &event) {
-  using parse_fn = void(*)(std::istringstream&, event_t&);
+  using parse_fn = void (*)(std::istringstream &, event_t &);
   using entry = std::pair<std::string, parse_fn>;
   std::string event_identifier;
 
   std::getline(ss, event_identifier);
-  std::array<entry, 5> router_table = {{
-    {"ACCELERATION", parse_acceleration},
-    {"DIRECTION", parse_direction},
-    {"POSITION", parse_position},
-    {"TRUE POSITION", parse_true_position},
-    {"SPEED", parse_speed}
-  }};
-  for (const auto& it : router_table) {
+  std::array<entry, 5> router_table = {{{"ACCELERATION", parse_acceleration},
+                                        {"DIRECTION", parse_direction},
+                                        {"POSITION", parse_position},
+                                        {"TRUE POSITION", parse_true_position},
+                                        {"SPEED", parse_speed}}};
+  for (const auto &it : router_table) {
     if (it.first == event_identifier) {
       it.second(ss, event);
       if (ss.fail()) {
@@ -44,33 +42,33 @@ static void router(std::istringstream &ss, event_t &event) {
       return;
     }
   }
-  throw std::runtime_error("router : unknown event identifier (" + event_identifier + ")");
+  throw std::runtime_error("router : unknown event identifier (" +
+                           event_identifier + ")");
 }
 
-
 static void parse_acceleration(std::istringstream &ss, event_t &event) {
-  event.type = EventParser::DataType::Acceleration;
-  parse_vector3d(ss, event.acceleration);
+  event.type = DataType::Acceleration;
+  parse_vector3d(ss, event.vec);
 }
 
 static void parse_direction(std::istringstream &ss, event_t &event) {
-  event.type = EventParser::DataType::Direction;
-  parse_vector3d(ss, event.position);
+  event.type = DataType::Direction;
+  parse_vector3d(ss, event.vec);
 }
 
 static void parse_position(std::istringstream &ss, event_t &event) {
-  event.type = EventParser::DataType::Position;
-  parse_vector3d(ss, event.position);
+  event.type = DataType::Position;
+  parse_vector3d(ss, event.vec);
 }
 
 static void parse_true_position(std::istringstream &ss, event_t &event) {
-  event.type = EventParser::DataType::TruePosition;
-  parse_vector3d(ss, event.position);
+  event.type = DataType::TruePosition;
+  parse_vector3d(ss, event.vec);
 }
 
 static void parse_speed(std::istringstream &ss, event_t &event) {
-  event.type = EventParser::DataType::Speed;
-  ss >> event.speed;
+  event.type = DataType::Speed;
+  ss >> event.scalar;
 }
 static void parse_vector3d(std::istringstream &ss, Eigen::Vector3d &vec) {
   ss >> vec[0];
@@ -104,8 +102,7 @@ static std::chrono::milliseconds parse_timestamp(std::istringstream &str) {
     throw std::runtime_error("parse_timestamp : parse error");
   }
   return std::chrono::milliseconds{
-    (hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds
-  };
+      (hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds};
 }
 
 static int expect_char(std::istringstream &ss, char expected) {
