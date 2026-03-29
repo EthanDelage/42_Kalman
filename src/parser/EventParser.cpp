@@ -79,7 +79,7 @@ static void parse_vector3d(std::istringstream &ss, Eigen::Vector3d &vec) {
 }
 
 static std::chrono::milliseconds parse_timestamp(std::istringstream &str) {
-  int hours, minutes, seconds, milliseconds;
+  size_t hours, minutes, seconds, milliseconds;
 
   if (expect_char(str, '[') == -1) {
     throw std::runtime_error("parse_timestamp : unexpected char");
