@@ -4,6 +4,7 @@ add_executable(kalman
         parser/EventParser.cpp
         parser/MessageParser.cpp
         Application.cpp
+        data/print.cpp
 )
 
 include(FetchContent)

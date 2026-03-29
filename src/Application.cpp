@@ -1,5 +1,8 @@
 #include "Application.hpp"
 
+#include "data/print.hpp"
+#include <iostream>
+
 #define MSG_READY_STR "READY\n"
 
 Application::Application() {}
@@ -9,8 +12,24 @@ void Application::run() {
 
   while (true) {
     events = read_message();
-    // TODO: print events
-    // TODO: process events
+    for (EventParser::event_t event : events) {
+      switch (event.type) {
+      case EventParser::DataType::Acceleration:
+        std::cout << event.data.acceleration << std::endl;
+        break;
+      case EventParser::DataType::Direction:
+        std::cout << event.data.direction << std::endl;
+        break;
+      case EventParser::DataType::Position:
+        std::cout << event.data.position << std::endl;
+        break;
+      case EventParser::DataType::Speed:
+        std::cout << event.data.speed << std::endl;
+        break;
+        // TODO: handle TruePosition
+      }
+      // TODO: process events
+    }
     // TODO: send_response
   }
 }
