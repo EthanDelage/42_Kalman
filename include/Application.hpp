@@ -15,6 +15,7 @@ private:
   // TODO: add kalman_filter attribute
 
   void send_ready_msg() const;
+  void send_position(const Eigen::Vector3d &pos) const;
   std::vector<event_t> read_message();
 };
 
