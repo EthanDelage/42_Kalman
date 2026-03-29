@@ -16,13 +16,13 @@ public:
 
   MessageParser();
 
-  MessageType parse(std::istream &str);
+  MessageType parse(std::string &ss);
 
-  std::vector<EventParser::event_t> get_events() const;
+  std::vector<event_t> get_events() const;
   void clear_events();
 
 private:
-  std::vector<EventParser::event_t> _events;
+  std::vector<event_t> _events;
   bool _message_started;
 };
 

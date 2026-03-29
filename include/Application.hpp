@@ -15,7 +15,7 @@ private:
   // TODO: add kalman_filter attribute
 
   void send_ready_msg() const;
-  std::vector<EventParser::event_t> read_message();
+  std::vector<event_t> read_message();
 };
 
 #endif // KALMAN_APPLICATION_HPP

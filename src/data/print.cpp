@@ -1,29 +1,29 @@
 #include "data/print.hpp"
 
-std::ostream &operator<<(std::ostream &os, const acceleration_t &acc) {
-  os << '[' << acc.timestamp << "] - Acceleration: " << acc.vec[0] << ", "
-     << acc.vec[1] << ", " << acc.vec[2];
-  return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const direction_t &dir) {
-  os << '[' << dir.timestamp << "] - Direction: " << dir.vec[0] << ", "
-     << dir.vec[1] << ", " << dir.vec[2];
-  return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const imu_t &imu) {
-  os << imu.acceleration << std::endl << imu.direction;
-  return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const position_t &pos) {
-  os << '[' << pos.timestamp << "] - Position: " << pos.vec[0] << ", "
-     << pos.vec[1] << ", " << pos.vec[2];
-  return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const speed_t &speed) {
-  os << '[' << speed.timestamp << "] - Speed: " << speed.scalar;
+std::ostream &operator<<(std::ostream &os, const event_t &event) {
+  os << '[' << event.timestamp.count() << "] - ";
+  switch (event.type) {
+  case DataType::Acceleration:
+    os << "Acceleration";
+    break;
+  case DataType::Direction:
+    os << "Direction";
+    break;
+  case DataType::Position:
+    os << "Position";
+    break;
+  case DataType::TruePosition:
+    os << "TruePosition";
+    break;
+  case DataType::Speed:
+    os << "Speed";
+    break;
+  }
+  os << ": ";
+  if (event.type == DataType::Speed) {
+    os << event.scalar;
+  } else {
+    os << event.vec[0] << ", " << event.vec[1] << ", " << event.vec[2];
+  }
   return os;
 }
