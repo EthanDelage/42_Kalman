@@ -21,7 +21,7 @@ public:
   static event_t parse(std::istringstream &str);
 };
 
-typedef struct event_s {
+struct event_s {
   EventParser::DataType type;
   std::chrono::milliseconds timestamp;
   union {
@@ -30,6 +30,6 @@ typedef struct event_s {
     Eigen::Vector3d position;
     double speed;
   };
-} event_t;
+};
 
 #endif // KALMAN_EVENTPARSER_HPP
