@@ -1,10 +1,10 @@
 #ifndef KALMAN_EVENTPARSER_HPP
 #define KALMAN_EVENTPARSER_HPP
 
-#include "data/acceleration.hpp"
-#include "data/direction.hpp"
-#include "data/position.hpp"
-#include "data/speed.hpp"
+#include <chrono>
+#include <Eigen/Dense>
+
+typedef struct event_s event_t;
 
 class EventParser {
 public:
@@ -14,20 +14,22 @@ public:
     Acceleration,
     Direction,
     Position,
+    TruePosition,
     Speed,
   };
 
-  typedef struct {
-    DataType type;
-    union data_u {
-      acceleration_t acceleration;
-      direction_t direction;
-      position_t position;
-      speed_t speed;
-    };
-  } event_t;
+  static event_t parse(std::istringstream &str);
+};
 
-  static event_t parse(std::istream &str);
+struct event_s {
+  EventParser::DataType type;
+  std::chrono::milliseconds timestamp;
+  union {
+    Eigen::Vector3d acceleration;
+    Eigen::Vector3d direction;
+    Eigen::Vector3d position;
+    double speed;
+  };
 };
 
 #endif // KALMAN_EVENTPARSER_HPP
