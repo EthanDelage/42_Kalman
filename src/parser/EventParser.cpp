@@ -27,13 +27,13 @@ static void router(std::istringstream &ss, event_t &event) {
   using entry = std::pair<std::string, parse_fn>;
   std::string event_identifier;
 
-  ss >> event_identifier;
+  std::getline(ss, event_identifier);
   std::array<entry, 5> router_table = {{
     {"ACCELERATION", parse_acceleration},
     {"DIRECTION", parse_direction},
     {"POSITION", parse_position},
-    {"TRUE_POSITION", parse_true_position},
-    {"TRUE_SPEED", parse_speed}
+    {"TRUE POSITION", parse_true_position},
+    {"SPEED", parse_speed}
   }};
   for (const auto& it : router_table) {
     if (it.first == event_identifier) {
@@ -44,7 +44,7 @@ static void router(std::istringstream &ss, event_t &event) {
       return;
     }
   }
-  throw std::runtime_error("router : unknown event identifier");
+  throw std::runtime_error("router : unknown event identifier (" + event_identifier + ")");
 }
 
 
