@@ -20,6 +20,7 @@ UdpSocket::UdpSocket() {
     throw std::runtime_error(std::string("UdpSocket: socket: ") +
                              strerror(errno));
   }
+  set_recv_timeout(1);
   if (connect(_socket_fd, reinterpret_cast<struct sockaddr *>(&addr),
               sizeof(addr)) == -1) {
     throw std::runtime_error(std::string("UdpSocket: connect: ") +
@@ -49,4 +50,12 @@ void UdpSocket::send(const std::string &str) const {
         std::string("UdpSocket::send : message partially sent") +
         strerror(errno));
   }
+}
+
+void UdpSocket::set_recv_timeout(int second) const {
+  struct timeval tv;
+  tv.tv_sec = second;
+  tv.tv_usec = 0;
+
+  setsockopt(_socket_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 }
