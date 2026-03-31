@@ -32,22 +32,27 @@ Eigen::Vector3d compute_position(std::vector<event_t> events,
                                  KalmanFilter &filter) {
   // TODO: should I apply the rotation to the acceleration ?
   Eigen::Vector3d acceleration, gps;
+  Eigen::Vector<double, 6> state;
   bool acceleration_init = false, gps_init = false;
 
   for (event_t event : events) {
-    if (event.type == DataType::Acceleration) {
+    switch (event.type) {
+    case DataType::Acceleration:
       acceleration_init = true;
       acceleration = event.vec;
-    } else if (event.type == DataType::Position) {
+      break;
+    case DataType::Position:
       gps_init = true;
       gps = event.vec;
-    } else if (event.type == DataType::TruePosition) {
-      Eigen::Vector<double, 6> state;
+      break;
+    case DataType::TruePosition:
       state.head<3>() = event.vec;
       state.tail<3>() = filter.get_state().tail<3>();
       filter.set_state(state);
       std::cout << event << std::endl;
       return event.vec;
+    default:
+      break;
     }
   }
   if (acceleration_init) {
