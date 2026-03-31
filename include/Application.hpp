@@ -18,6 +18,7 @@ private:
   void send_ready_msg() const;
   void send_position(const Eigen::Vector3d &pos) const;
   std::vector<event_t> read_message();
+  Eigen::Vector3d compute_initial_state(std::vector<event_t> &events);
   static KalmanFilter init_kalman_filter();
 };
 
