@@ -8,12 +8,17 @@
 Application::Application() {}
 
 void Application::run() {
+
   send_ready_msg();
 
   while (true) {
     std::vector<event_t> events = read_message();
     for (event_t event : events) {
       std::cout << event << std::endl;
+      if (event.type == DataType::TruePosition) {
+        send_position(event.vec);
+        break;
+      }
       // TODO: process events
     }
     // TODO: send_response
@@ -21,6 +26,13 @@ void Application::run() {
 }
 
 void Application::send_ready_msg() const { _udp_socket.send(MSG_READY_STR); }
+
+void Application::send_position(const Eigen::Vector3d &pos) const {
+  std::string pos_str = std::to_string(pos[0]) + ' ' + std::to_string(pos[1]) +
+                        ' ' + std::to_string(pos[2]) + '\n';
+
+  _udp_socket.send(pos_str);
+}
 
 std::vector<event_t> Application::read_message() {
   MessageParser::MessageType msg_type = MessageParser::MessageType::Undefined;

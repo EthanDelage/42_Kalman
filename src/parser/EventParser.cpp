@@ -1,7 +1,7 @@
 #include "parser/EventParser.hpp"
 
-#include <chrono>
 #include <Eigen/Dense>
+#include <chrono>
 
 static void router(std::istringstream &ss, event_t &event);
 static void parse_acceleration(std::istringstream &ss, event_t &event);
