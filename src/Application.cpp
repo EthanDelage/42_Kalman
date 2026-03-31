@@ -1,27 +1,25 @@
 #include "Application.hpp"
 
 #include "data/print.hpp"
-#include <iostream>
+#include "motion_model.hpp"
 
 #define MSG_READY_STR "READY\n"
 
 Application::Application() {}
 
 void Application::run() {
+  KalmanFilter filter =
+      KalmanFilter(Eigen::Vector<double, 6>(), Eigen::Matrix<double, 6, 6>(),
+                   Eigen::Matrix<double, 6, 3>(), Eigen::Matrix<double, 3, 6>(),
+                   Eigen::Matrix<double, 6, 6>(), Eigen::Matrix<double, 3, 3>(),
+                   Eigen::Matrix<double, 6, 6>());
 
   send_ready_msg();
 
   while (true) {
     std::vector<event_t> events = read_message();
-    for (event_t event : events) {
-      std::cout << event << std::endl;
-      if (event.type == DataType::TruePosition) {
-        send_position(event.vec);
-        break;
-      }
-      // TODO: process events
-    }
-    // TODO: send_response
+    Eigen::Vector3d estimate_pos = compute_position(events, filter);
+    send_position(estimate_pos);
   }
 }
 
