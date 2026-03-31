@@ -5,20 +5,14 @@
 
 #define MSG_READY_STR "READY\n"
 
-Application::Application() {}
+Application::Application() : _filter(init_kalman_filter()) {}
 
 void Application::run() {
-  KalmanFilter filter =
-      KalmanFilter(Eigen::Vector<double, 6>(), Eigen::Matrix<double, 6, 6>(),
-                   Eigen::Matrix<double, 6, 3>(), Eigen::Matrix<double, 3, 6>(),
-                   Eigen::Matrix<double, 6, 6>(), Eigen::Matrix<double, 3, 3>(),
-                   Eigen::Matrix<double, 6, 6>());
-
   send_ready_msg();
 
   while (true) {
     std::vector<event_t> events = read_message();
-    Eigen::Vector3d estimate_pos = compute_position(events, filter);
+    Eigen::Vector3d estimate_pos = compute_position(events, _filter);
     send_position(estimate_pos);
   }
 }
@@ -41,4 +35,16 @@ std::vector<event_t> Application::read_message() {
     msg_type = _parser.parse(str);
   }
   return _parser.get_events();
+}
+
+KalmanFilter Application::init_kalman_filter() {
+  Eigen::Vector<double, 6> x;
+  Eigen::Matrix<double, 6, 6> F;
+  Eigen::Matrix<double, 6, 3> B;
+  Eigen::Matrix<double, 3, 6> H;
+  Eigen::Matrix<double, 6, 6> Q;
+  Eigen::Matrix<double, 3, 3> R;
+  Eigen::Matrix<double, 6, 6> P;
+
+  return KalmanFilter(x, F, B, H, Q, R, P);
 }
