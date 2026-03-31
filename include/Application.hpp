@@ -14,6 +14,7 @@ private:
   UdpSocket _udp_socket;
   MessageParser _parser;
   KalmanFilter _filter;
+  bool _exit;
 
   void send_ready_msg() const;
   void send_position(const Eigen::Vector3d &pos) const;

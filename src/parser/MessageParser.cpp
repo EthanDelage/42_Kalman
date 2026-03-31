@@ -24,6 +24,9 @@ MessageParser::MessageType MessageParser::parse(std::string &str) {
     _events.push_back(EventParser::parse(ss));
     return MessageType::Event;
   }
+  if (first_word == MSG_END_SIMULATION_STR) {
+    return MessageType::EndSimulation;
+  }
   return MessageType::Undefined;
 }
 

@@ -10,7 +10,8 @@
 #define THETA_GYRO 0.01
 #define THETA_GPS 0.1
 
-Application::Application() : _filter(init_kalman_filter(1. / 100.)) {}
+Application::Application()
+    : _filter(init_kalman_filter(1. / 100.)), _exit(false) {}
 
 void Application::run() {
   send_ready_msg();
@@ -21,6 +22,10 @@ void Application::run() {
 
   while (true) {
     events = read_message();
+    if (_exit) {
+      std::cout << "Exiting..." << std::endl;
+      return;
+    }
     estimate_pos = compute_position(events, _filter);
     send_position(estimate_pos);
   }
@@ -42,6 +47,10 @@ std::vector<event_t> Application::read_message() {
   while (msg_type != MessageParser::MessageType::End) {
     std::string str = _udp_socket.recv();
     msg_type = _parser.parse(str);
+    if (msg_type == MessageParser::MessageType::EndSimulation) {
+      _exit = true;
+      return std::vector<event_t>();
+    }
   }
   return _parser.get_events();
 }
