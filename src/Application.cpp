@@ -6,8 +6,11 @@
 #include <iostream>
 
 #define MSG_READY_STR "READY\n"
+#define THETA_ACCEL 0.001
+#define THETA_GYRO 0.01
+#define THETA_GPS 0.1
 
-Application::Application() : _filter(init_kalman_filter()) {}
+Application::Application() : _filter(init_kalman_filter(1. / 100.)) {}
 
 void Application::run() {
   send_ready_msg();
@@ -78,7 +81,7 @@ Application::compute_initial_state(std::vector<event_t> &events) {
   return true_pos;
 }
 
-KalmanFilter Application::init_kalman_filter() {
+KalmanFilter Application::init_kalman_filter(double dt) {
   Eigen::Vector<double, 6> x;
   Eigen::Matrix<double, 6, 6> F;
   Eigen::Matrix<double, 6, 3> B;
@@ -86,6 +89,37 @@ KalmanFilter Application::init_kalman_filter() {
   Eigen::Matrix<double, 6, 6> Q;
   Eigen::Matrix<double, 3, 3> R;
   Eigen::Matrix<double, 6, 6> P;
+
+  Eigen::Matrix3d identity3 = Eigen::Matrix3d::Identity();
+  Eigen::Matrix3d zero3 = Eigen::Matrix3d::Zero();
+
+  // State Transition model
+  F.block<3, 3>(0, 0) = identity3;
+  F.block<3, 3>(0, 3) = dt * identity3;
+  F.block<3, 3>(3, 3) = identity3;
+  F.block<3, 3>(3, 0) = zero3;
+
+  // Control Input model
+  B.block<3, 3>(0, 0) = std::pow(dt, 2) / 2 * identity3;
+  B.block<3, 3>(3, 0) = dt * identity3;
+
+  // Observation model
+  H.block<3, 3>(0, 0) = identity3;
+  H.block<3, 3>(0, 3) = zero3;
+
+  // Process noise covariance
+  Q.block<3, 3>(0, 0) = std::pow(dt, 4) / 4 * identity3;
+  Q.block<3, 3>(0, 3) = std::pow(dt, 3) / 2 * identity3;
+  Q.block<3, 3>(3, 0) = std::pow(dt, 3) / 2 * identity3;
+  Q.block<3, 3>(3, 3) = std::pow(dt, 2) * identity3;
+  Q *= THETA_ACCEL;
+
+  // Observation noise covariance
+  R = std::pow(THETA_GPS, 2) * identity3;
+
+  // Estimate Covariance
+  P = std::pow(THETA_ACCEL * THETA_GYRO, 2) *
+      Eigen::Matrix<double, 6, 6>::Identity();
 
   return KalmanFilter(x, F, B, H, Q, R, P);
 }
