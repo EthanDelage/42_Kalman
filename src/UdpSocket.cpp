@@ -17,11 +17,13 @@ UdpSocket::UdpSocket() {
   addr.sin_addr.s_addr = htonl(KALMAN_UDP_ADDR);
   _socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (_socket_fd == -1) {
-    throw std::runtime_error("UdpSocket: socket");
+    throw std::runtime_error(std::string("UdpSocket: socket: ") +
+                             strerror(errno));
   }
   if (connect(_socket_fd, reinterpret_cast<struct sockaddr *>(&addr),
               sizeof(addr)) == -1) {
-    throw std::runtime_error("UdpSocket: connect");
+    throw std::runtime_error(std::string("UdpSocket: connect: ") +
+                             strerror(errno));
   }
 }
 
@@ -30,7 +32,8 @@ std::string UdpSocket::recv() const {
 
   ssize_t len = ::recv(_socket_fd, buffer.data(), buffer.size(), 0);
   if (len == -1) {
-    throw std::runtime_error("UdpSocket::recv : recv");
+    throw std::runtime_error(std::string("UdpSocket::recv : recv: ") +
+                             strerror(errno));
   }
   return {buffer.data(), static_cast<std::string::size_type>(len)};
 }
@@ -38,9 +41,12 @@ std::string UdpSocket::recv() const {
 void UdpSocket::send(const std::string &str) const {
   ssize_t len = ::send(_socket_fd, str.data(), str.size(), 0);
   if (len == -1) {
-    throw std::runtime_error("UdpSocket::send : send");
+    throw std::runtime_error(std::string("UdpSocket::send : send") +
+                             strerror(errno));
   }
   if (static_cast<std::string::size_type>(len) != str.size()) {
-    throw std::runtime_error("UdpSocket::send : message partially sent");
+    throw std::runtime_error(
+        std::string("UdpSocket::send : message partially sent") +
+        strerror(errno));
   }
 }
