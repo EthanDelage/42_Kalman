@@ -6,6 +6,7 @@ add_executable(kalman
         Application.cpp
         data/print.cpp
         KalmanFilter.cpp
+        motion_model.cpp
 )
 
 include(FetchContent)
