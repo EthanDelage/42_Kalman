@@ -17,20 +17,8 @@ Eigen::Matrix3d rotation_matrix(const Eigen::Vector3d &euler_rotation) {
   return r_z * r_y * r_x;
 }
 
-Eigen::Vector3d transform_acceleration(const Eigen::Vector3d &acceleration,
-                                       const Eigen::Matrix3d &rotation) {
-  return rotation * acceleration;
-}
-
-Eigen::Vector3d compute_velocity(const Eigen::Vector3d &velocity,
-                                 const Eigen::Vector3d &acceleration,
-                                 double dt) {
-  return velocity + acceleration * dt;
-}
-
 Eigen::Vector3d compute_position(std::vector<event_t> events,
                                  KalmanFilter &filter) {
-  // TODO: should I apply the rotation to the acceleration ?
   Eigen::Vector3d acceleration, gps;
   Eigen::Vector<double, 6> state;
   bool acceleration_init = false, gps_init = false;
@@ -49,7 +37,6 @@ Eigen::Vector3d compute_position(std::vector<event_t> events,
       state.head<3>() = event.vec;
       state.tail<3>() = filter.get_state().tail<3>();
       filter.set_state(state);
-      std::cout << event << std::endl;
       return event.vec;
     default:
       break;
