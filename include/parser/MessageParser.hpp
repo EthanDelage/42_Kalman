@@ -4,6 +4,7 @@
 
 #define MSG_START_STR "MSG_START"
 #define MSG_END_STR "MSG_END"
+#define MSG_END_SIMULATION_STR "GOODBYE."
 
 class MessageParser {
 public:
@@ -11,6 +12,7 @@ public:
     Start,
     Event,
     End,
+    EndSimulation,
     Undefined,
   };
 

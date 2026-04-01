@@ -5,6 +5,8 @@ add_executable(kalman
         parser/MessageParser.cpp
         Application.cpp
         data/print.cpp
+        KalmanFilter.cpp
+        motion_model.cpp
 )
 
 include(FetchContent)

@@ -10,6 +10,8 @@ public:
 
 private:
   int _socket_fd;
+
+  void set_recv_timeout(int second) const;
 };
 
 #endif // KALMAN_UDPSOCKET_HPP
