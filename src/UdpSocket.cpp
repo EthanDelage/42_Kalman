@@ -4,6 +4,7 @@
 #include <array>
 #include <netinet/in.h>
 #include <stdexcept>
+#include <cstring>
 
 #define KALMAN_UDP_PORT 4242
 #define KALMAN_UDP_ADDR INADDR_ANY
